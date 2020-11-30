@@ -45,7 +45,7 @@ if { [info exists ::origin_dir_loc] } {
 }
 
 # Set the project name
-set _xil_proj_name_ "zcu104_base"
+set _xil_proj_name_ "vivado_prj"
 
 # Use project name variable, if specified in the tcl shell
 if { [info exists ::user_project_name] } {
@@ -138,7 +138,7 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set IP repository paths
 set obj [get_filesets sources_1]
 if { $obj != {} } {
-   set_property "ip_repo_paths" "[file normalize "$ACCDNN_ROOT/build/model_ip"]" $obj
+   set_property "ip_repo_paths" "[file normalize "$env(ACCDNN_ROOT)/build/model_ip"]" $obj
 
    # Rebuild user ip_repo's index before adding any source files
    update_ip_catalog -rebuild
@@ -147,29 +147,22 @@ if { $obj != {} } {
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
- [file normalize "$ACCDNN_ROOT/build/coe/ip2_bm_ram.coe"] \
- [file normalize "$ACCDNN_ROOT/build/coe/ip1_bm_ram.coe"] \
- [file normalize "$ACCDNN_ROOT/build/coe/conv3_bm_ram.coe"] \
- [file normalize "$ACCDNN_ROOT/build/coe/conv2_bm_ram.coe"] \
- [file normalize "$ACCDNN_ROOT/build/coe/conv1_bm_ram.coe"] \
+ [file normalize "$env(ACCDNN_ROOT)/build/coe/ip2_bm_ram.coe"] \
+ [file normalize "$env(ACCDNN_ROOT)/build/coe/ip1_bm_ram.coe"] \
+ [file normalize "$env(ACCDNN_ROOT)/build/coe/conv3_bm_ram.coe"] \
+ [file normalize "$env(ACCDNN_ROOT)/build/coe/conv2_bm_ram.coe"] \
+ [file normalize "$env(ACCDNN_ROOT)/build/coe/conv1_bm_ram.coe"] \
+ [file normalize "${origin_dir}/vivado_srcs/zcu104_base.bd"] \
+ [file normalize "${origin_dir}/vivado_srcs/zcu104_base_wrapper.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
 # Add local files from the original project (-no_copy_sources specified)
-set files [list \
- [file normalize "${origin_dir}/zcu104_base.srcs/sources_1/bd/zcu104_base/zcu104_base.bd" ]\
- [file normalize "${origin_dir}/zcu104_base.srcs/sources_1/bd/zcu104_base/hdl/zcu104_base_wrapper.v" ]\
-]
-set added_files [add_files -fileset sources_1 $files]
 
 # Set 'sources_1' fileset file properties for remote files
 # None
 
 # Set 'sources_1' fileset file properties for local files
-set file "zcu104_base/zcu104_base.bd"
-set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
-set_property -name "registered_with_manager" -value "1" -objects $file_obj
-
 
 # Set 'sources_1' fileset properties
 set obj [get_filesets sources_1]
