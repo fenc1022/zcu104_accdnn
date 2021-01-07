@@ -18,17 +18,19 @@ In AccDNN directory:
 
 In zcu104_accdnn directory:
 
-1. Generate Vivado project by  
-    `vivado -mode batch -source ./zcu104_base.tcl`  
-2. Check project design and generate bitstream in Vivado GUI, then export .XSA file in File/export/export hardware/fixed/include bitstream menu.  
-3. petalinux setup
-    `petalinux-create -t project -n prj_name --template zynqMP`(if clone plnx_prj from git, no need to do this step)  
-    `petalinux-config --get-hw-description <PATH TO XSA FILE>`  
-    `petalinux-build`  
-4. package booting files
-    `petalinux-package --boot --fpga --u-boot --force`  
-5. prepare the boot SD card(first partition 100M FAT32, second partition EXT4)  
-    `cp ~/zcu104_accdnn/plnx_prj/images/linux/BOOT.BIN <path to first partition on SD card>`  
+1. Generate Vivado project by    
+    `vivado -mode batch -source ./zcu104_base.tcl`   
+2. Check project design and generate bitstream in Vivado GUI, then export .XSA file in File/export/export hardware/fixed/include bitstream menu.   
+3. petalinux setup    
+    `petalinux-create -t project -n prj_name --template zynqMP`(if clone plnx_prj from git, no need to do this step)    
+    `petalinux-config --get-hw-description <PATH TO XSA FILE>`    
+    `petalinux-build`    
+4. package booting files    
+    `petalinux-package --boot --fpga --u-boot --force`   
+5. prepare the boot SD card(first partition 100M FAT32, second partition EXT4)   
+    `cp ~/zcu104_accdnn/plnx_prj/images/linux/BOOT.BIN <path to first partition on SD card>`   
+    `cp ~/zcu104_accdnn/plnx_prj/images/linux/boot.scr <path to first partition on SD card>`   
+    `cp ~/zcu104_accdnn/plnx_prj/images/linux/image.ub <path to first partition on SD card>`   
     `sudo tar xvf ~/zcu104_accdnn/plnx_prj/images/linux/rootfs.tar.gz <path to 2nd partition on SD card>`  
    then this SD card can be used to boot ZCU104 board
 

@@ -4222,6 +4222,12 @@ CONFIG_imagefeature-debug-tweaks=y
 # CONFIG_peekpoke is not set
 
 #
+# modules 
+#
+# CONFIG_accdnn is not set
+# CONFIG_gpio is not set
+
+#
 # user packages 
 #
 
