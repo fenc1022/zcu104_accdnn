@@ -14,7 +14,10 @@ In AccDNN directory:
 4. Generate complete accelerator as a Vivado project by
     `cd ./lib/ip`  
     `vivado -mode batch -source ips.tcl`  
-5. Package previous project as an IP in GUI. Associate "ddr" interface to "ddr_clk".
+5. Package previous project as an IP in GUI. Here, we need to    
+   -- Associate "ddr" interface to "ddr_clk";    
+   -- edit port "complete_int", set SENSITIVITY to EDGE RISING;
+   -- edit port clk & ddr_clk, set FREQ_HZ to user defined.
 
 In zcu104_accdnn directory:
 
