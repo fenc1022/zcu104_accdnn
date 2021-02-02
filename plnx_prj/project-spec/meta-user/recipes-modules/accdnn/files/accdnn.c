@@ -27,6 +27,11 @@
 #include <linux/of_address.h>
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
+#include <linux/delay.h>
+#include <linux/mm.h>
+#include <linux/pagemap.h>
+//#include <asm-generic/page.h>
+#include <asm-generic/barrier.h>
 #include "accdnn.h"
 
 /* Standard module information, edit as appropriate */
@@ -83,15 +88,106 @@ ssize_t accdnn_write(struct file *filep, const char __user *buf,
 
 static long accdnn_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 {
+	volatile u32 ctrl_reg;
+	volatile u32 stat_reg;
+	int page_num;
+	struct page *pages;
+	struct device *pdev; 
+	void* kvaddress;
+	unsigned long uvaddress;
+	dma_addr_t host_phyaddr;
+	phys_addr_t dev_phyaddr;
+
+	pdev = &(accdnn_lp->pdev->dev);
 	switch (cmd)
 	{
-	case ACCDNN_START_MODULE:
-		break;
 	case ACCDNN_RESET_MODULE:
+		// Set reset bit in control register then clear it
+		ctrl_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
+		ctrl_reg = ctrl_reg | ACCDNN_CTRL_RST_MASK;
+		iowrite32(ctrl_reg, accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
+		ctrl_reg = ctrl_reg & (~ACCDNN_CTRL_RST_MASK);
+		iowrite32(ctrl_reg, accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
 		break;
-	case ACCDNN_IS_READY:
+	case ACCDNN_LOAD_WEIGHTS:
+		// Map user space to kernel space
+		uvaddress = ((struct accdnn_wgt_mem*)arg)->host_virtaddr;
+		// down_read(&current->mm->mmap_sem); // read-only protect
+		// page_num = get_user_pages(uvaddress,
+		// 			(WGT_SIZE >> 12) + 1, // TODO: Calculate how many pages to map
+		// 			0,
+		// 			&pages,
+		// 			NULL);
+		
+		// if (page_num) {
+		// 	kvaddress = kmap(pages);
+		// 	printk("%d pages mapped from user space to kernel space\n");
+		// 	printk("Address in user space: 0x%08X\n", (unsigned int)uvaddress);
+		// 	printk("Address in kernel space: 0x%08X\n", (unsigned int)kvaddress);
+		// }
+		// else {
+		// 	printk("Failed to map weights to kernel space\n");
+		// }
+
+		kvaddress = kmalloc(WGT_SIZE, GFP_KERNEL);
+		copy_from_user(kvaddress, (const void __user *)uvaddress, WGT_SIZE);
+
+		// Set weights src/dst address
+		host_phyaddr = dma_map_single(pdev, 
+					  	kvaddress,
+						IMG_SIZE,
+						DMA_TO_DEVICE);
+		dev_phyaddr = ((struct accdnn_wgt_mem*)arg)->dev_phyaddr;
+		iowrite32(host_phyaddr, accdnn_lp->virtaddr + ACCDNN_HWGT_OFST);
+		iowrite32(dev_phyaddr, accdnn_lp->virtaddr + ACCDNN_DWGT_OFST);
+		printk("Physical address in host: 0x%08X\n", host_phyaddr);
+		printk("Physical address in device: 0x%08X\n", dev_phyaddr);
+
+		// Start to load weights
+		// TODO: set image num register
+		iowrite32(1, accdnn_lp->virtaddr + ACCDNN_SIZE_OFST);
+		mb();
+		ctrl_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
+		ctrl_reg = ctrl_reg | ACCDNN_CTRL_LOAD_MASK;
+		mb();
+		iowrite32(ctrl_reg, accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
+		ctrl_reg = ctrl_reg & (~ACCDNN_CTRL_LOAD_MASK);
+		mb();
+		iowrite32(ctrl_reg, accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
+		mb();
+		// Wait for completion
+		do
+		{
+			stat_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_STAT_OFST);
+			msleep(10);
+		} while ((stat_reg & ACCDNN_STAT_READY_MASK) == 0);
+
+		// Finish up
+		dma_unmap_single(pdev, host_phyaddr, IMG_SIZE, DMA_TO_DEVICE);
+		// kunmap(pages);
+		// up_read(&current->mm->mmap_sem);
+		kfree(kvaddress);
+		printk("Weights loaded to dev\n");		
 		break;
-	case ACCDNN_IS_DONE:
+	case ACCDNN_CFG_IRQ:			
+		if (arg != 0) // Enable IRQ
+		{
+			ctrl_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
+			ctrl_reg = ctrl_reg | ACCDNN_CTRL_EINT_MASK;
+			iowrite32(ctrl_reg, accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
+		}
+		else // Disable IRQ
+		{
+			ctrl_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
+			ctrl_reg = ctrl_reg & (~ACCDNN_CTRL_EINT_MASK);
+			iowrite32(ctrl_reg, accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
+		}
+		break;
+	case ACCDNN_START_INF:
+		break;
+	case ACCDNN_CHECK_STAT:
+		stat_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_STAT_OFST);
+		copy_to_user((int*)arg, &stat_reg, sizeof(int));
 		break;
 	default:
 		return -EOPNOTSUPP;

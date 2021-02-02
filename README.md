@@ -37,5 +37,9 @@ In zcu104_accdnn directory:
     `sudo tar xvf ~/zcu104_accdnn/plnx_prj/images/linux/rootfs.tar.gz <path to 2nd partition on SD card>`  
    then this SD card can be used to boot ZCU104 board
 
+   Once bitstream is updated, one can use `bin_file_gen.sh` script to generate a BIN file to update the PL side logic with out refresh the whole SD card(Only when the AXI bus infrastructure are untouched). Transfer this BIN file to ZCU104 board, then use      
+   `fpgautil -o /lib/firmware/base/base.dtbo -b <PATH TO BIN FILE>/zcu104_base_wrapper.bit.bin`    
+   to load the new bitstream.
+
 
 

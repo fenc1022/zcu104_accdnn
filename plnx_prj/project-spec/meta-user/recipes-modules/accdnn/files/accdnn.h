@@ -1,6 +1,9 @@
 #ifndef ACCDNN_H
 #define ACCDNN_H
 
+#define WGT_SIZE 292352 // predefined model weight size in bytes
+#define IMG_SIZE 8192   // predefined image size in bytes
+
 struct accdnn_dev {
     dev_t dev_type;
 //    struct mutex mutex;
@@ -11,6 +14,16 @@ struct accdnn_dev {
     phys_addr_t phy_addr_start;
     phys_addr_t phy_addr_end;
     int irq_num;
+};
+
+struct accdnn_wgt_mem {
+    unsigned long host_virtaddr;
+    phys_addr_t   dev_phyaddr;
+};
+
+struct accdnn_io_mem {
+    unsigned long   host_input_virtaddr;
+    unsigned long   host_output_virtaddr;
 };
 
 /* Register offset */
@@ -34,9 +47,10 @@ struct accdnn_dev {
 
 /* IOCTL defines */
 #define ACCDNN_IOCTL_BASE   'A'
-#define ACCDNN_START_MODULE     _IOW(ACCDNN_IOCTL_BASE, 0, unsigned int)
-#define ACCDNN_RESET_MODULE     _IOW(ACCDNN_IOCTL_BASE, 1, unsigned int)
-#define ACCDNN_IS_READY         _IOR(ACCDNN_IOCTL_BASE, 2, unsigned int*)
-#define ACCDNN_IS_DONE          _IOR(ACCDNN_IOCTL_BASE, 3, unsigned int*)
+#define ACCDNN_RESET_MODULE     _IO(ACCDNN_IOCTL_BASE, 0)
+#define ACCDNN_LOAD_WEIGHTS     _IOW(ACCDNN_IOCTL_BASE, 1, struct accdnn_wgt_mem*)
+#define ACCDNN_CFG_IRQ          _IOW(ACCDNN_IOCTL_BASE, 2, unsigned int)
+#define ACCDNN_START_INF        _IOW(ACCDNN_IOCTL_BASE, 3, struct accdnn_io_mem*)
+#define ACCDNN_CHECK_STAT       _IOR(ACCDNN_IOCTL_BASE, 4, unsigned int*)
 
 #endif

@@ -1,0 +1,1 @@
+bootgen -image zcu104_base_wrapper.bif -arch zynqmp -o ./zcu104_base_wrapper.bit.bin -w

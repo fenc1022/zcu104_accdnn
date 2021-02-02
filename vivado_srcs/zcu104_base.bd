@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x4F63CC3127BFBCFE",
+      "boundary_crc": "0x6EF47EBE1FE66BA2",
       "device": "xczu7ev-ffvc1156-2-e",
       "name": "zcu104_base",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
@@ -10,28 +10,12 @@
       "validated": "true"
     },
     "design_tree": {
-      "axi_interconnect_hp3": {
+      "axi_interconnect_hp": {
         "s00_couplers": {
           "s00_regslice": "",
           "auto_ds": "",
           "auto_rs": ""
         }
-      },
-      "interconnect_axihpm0fpd": {
-        "xbar": "",
-        "s00_couplers": {
-          "s00_regslice": "",
-          "auto_us": "",
-          "auto_rs_w": ""
-        },
-        "s01_couplers": {
-          "s01_regslice": ""
-        },
-        "m00_couplers": {
-          "m00_regslice": ""
-        },
-        "s00_mmu": "",
-        "s01_mmu": ""
       },
       "interconnect_axilite": {
         "xbar": "",
@@ -48,27 +32,37 @@
       },
       "proc_sys_reset_0": "",
       "ps_e": "",
+      "axi_gpio_0": "",
+      "axi_interconnect_fp": {
+        "xbar": "",
+        "s00_couplers": {
+          "s00_regslice": "",
+          "auto_us": "",
+          "auto_rs_w": ""
+        },
+        "s01_couplers": {
+          "s01_regslice": ""
+        },
+        "m00_couplers": {
+          "m00_regslice": ""
+        },
+        "s00_mmu": "",
+        "s01_mmu": ""
+      },
       "ddr4_0": "",
       "util_vector_logic_0": "",
-      "axi_gpio_0": "",
       "model_dma_0": ""
     },
     "interface_ports": {
-      "C0_SYS_CLK_0": {
-        "mode": "Slave",
-        "vlnv": "xilinx.com:interface:diff_clock_rtl:1.0",
-        "parameters": {
-          "CAN_DEBUG": {
-            "value": "false",
-            "value_src": "default"
-          },
-          "FREQ_HZ": {
-            "value": "100000000",
-            "value_src": "default"
-          }
-        }
+      "GPIO_0": {
+        "mode": "Master",
+        "vlnv": "xilinx.com:interface:gpio_rtl:1.0"
       },
-      "C0_DDR4_0": {
+      "GPIO2_0": {
+        "mode": "Master",
+        "vlnv": "xilinx.com:interface:gpio_rtl:1.0"
+      },
+      "c0_ddr4": {
         "mode": "Master",
         "vlnv": "xilinx.com:interface:ddr4_rtl:1.0",
         "parameters": {
@@ -85,7 +79,7 @@
             "value_src": "user_prop"
           },
           "MEMORY_PART": {
-            "value": "MTA8ATF51264HZ-2G1",
+            "value": "MTA4ATF51264HZ-2G6",
             "value_src": "user_prop"
           },
           "DATA_WIDTH": {
@@ -125,22 +119,28 @@
             "value_src": "user_prop"
           },
           "CAS_WRITE_LATENCY": {
-            "value": "14",
+            "value": "11",
             "value_src": "user_prop"
           }
         }
       },
-      "GPIO_0": {
-        "mode": "Master",
-        "vlnv": "xilinx.com:interface:gpio_rtl:1.0"
-      },
-      "GPIO2_0": {
-        "mode": "Master",
-        "vlnv": "xilinx.com:interface:gpio_rtl:1.0"
+      "C0_SYS_CLK_0": {
+        "mode": "Slave",
+        "vlnv": "xilinx.com:interface:diff_clock_rtl:1.0",
+        "parameters": {
+          "CAN_DEBUG": {
+            "value": "false",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default"
+          }
+        }
       }
     },
     "components": {
-      "axi_interconnect_hp3": {
+      "axi_interconnect_hp": {
         "vlnv": "xilinx.com:ip:axi_interconnect:2.1",
         "xci_name": "zcu104_base_axi_interconnect_hp3_0",
         "parameters": {
@@ -257,7 +257,7 @@
             "components": {
               "s00_regslice": {
                 "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
-                "xci_name": "zcu104_base_s00_regslice_12",
+                "xci_name": "zcu104_base_s00_regslice_103",
                 "addressing": {
                   "interface_ports": {
                     "S_AXI": {
@@ -307,18 +307,6 @@
               }
             },
             "interface_nets": {
-              "auto_ds_to_auto_rs": {
-                "interface_ports": [
-                  "auto_ds/M_AXI",
-                  "auto_rs/S_AXI"
-                ]
-              },
-              "auto_rs_to_s00_couplers": {
-                "interface_ports": [
-                  "M_AXI",
-                  "auto_rs/M_AXI"
-                ]
-              },
               "s00_regslice_to_auto_ds": {
                 "interface_ports": [
                   "s00_regslice/M_AXI",
@@ -329,6 +317,18 @@
                 "interface_ports": [
                   "S_AXI",
                   "s00_regslice/S_AXI"
+                ]
+              },
+              "auto_ds_to_auto_rs": {
+                "interface_ports": [
+                  "auto_ds/M_AXI",
+                  "auto_rs/S_AXI"
+                ]
+              },
+              "auto_rs_to_s00_couplers": {
+                "interface_ports": [
+                  "M_AXI",
+                  "auto_rs/M_AXI"
                 ]
               }
             },
@@ -353,27 +353,27 @@
           }
         },
         "interface_nets": {
-          "s00_couplers_to_axi_interconnect_hp3": {
-            "interface_ports": [
-              "M00_AXI",
-              "s00_couplers/M_AXI"
-            ]
-          },
-          "axi_interconnect_hp3_to_s00_couplers": {
+          "axi_interconnect_hp_to_s00_couplers": {
             "interface_ports": [
               "S00_AXI",
               "s00_couplers/S_AXI"
             ]
+          },
+          "s00_couplers_to_axi_interconnect_hp": {
+            "interface_ports": [
+              "M00_AXI",
+              "s00_couplers/M_AXI"
+            ]
           }
         },
         "nets": {
-          "axi_interconnect_hp3_ACLK_net": {
+          "axi_interconnect_hp_ACLK_net": {
             "ports": [
               "M00_ACLK",
               "s00_couplers/M_ACLK"
             ]
           },
-          "axi_interconnect_hp3_ARESETN_net": {
+          "axi_interconnect_hp_ARESETN_net": {
             "ports": [
               "M00_ARESETN",
               "s00_couplers/M_ARESETN"
@@ -394,598 +394,6 @@
         },
         "pfm_attributes": {
           "AXI_PORT": "S01_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S02_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S03_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S04_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S05_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S06_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S07_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S08_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S09_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S10_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S11_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S12_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S13_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S14_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"} S15_AXI {memport \"S_AXI_HP\" sptag \"HPC0\" memory \"ps_e HPC0_DDR_LOW\"}"
-        }
-      },
-      "interconnect_axihpm0fpd": {
-        "vlnv": "xilinx.com:ip:axi_interconnect:2.1",
-        "xci_name": "zcu104_base_interconnect_axihpm0fpd_0",
-        "parameters": {
-          "M00_HAS_REGSLICE": {
-            "value": "4"
-          },
-          "NUM_MI": {
-            "value": "1"
-          },
-          "NUM_SI": {
-            "value": "2"
-          },
-          "S00_HAS_DATA_FIFO": {
-            "value": "0"
-          },
-          "S00_HAS_REGSLICE": {
-            "value": "4"
-          },
-          "S01_HAS_DATA_FIFO": {
-            "value": "0"
-          },
-          "S01_HAS_REGSLICE": {
-            "value": "4"
-          },
-          "STRATEGY": {
-            "value": "0"
-          }
-        },
-        "interface_ports": {
-          "S00_AXI": {
-            "mode": "Slave",
-            "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-          },
-          "M00_AXI": {
-            "mode": "Master",
-            "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-          },
-          "S01_AXI": {
-            "mode": "Slave",
-            "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-          }
-        },
-        "ports": {
-          "ACLK": {
-            "type": "clk",
-            "direction": "I",
-            "parameters": {
-              "ASSOCIATED_RESET": {
-                "value": "ARESETN"
-              }
-            }
-          },
-          "ARESETN": {
-            "type": "rst",
-            "direction": "I"
-          },
-          "S00_ACLK": {
-            "type": "clk",
-            "direction": "I",
-            "parameters": {
-              "ASSOCIATED_BUSIF": {
-                "value": "S00_AXI"
-              },
-              "ASSOCIATED_RESET": {
-                "value": "S00_ARESETN"
-              }
-            }
-          },
-          "S00_ARESETN": {
-            "type": "rst",
-            "direction": "I"
-          },
-          "M00_ACLK": {
-            "type": "clk",
-            "direction": "I",
-            "parameters": {
-              "ASSOCIATED_BUSIF": {
-                "value": "M00_AXI"
-              },
-              "ASSOCIATED_RESET": {
-                "value": "M00_ARESETN"
-              }
-            }
-          },
-          "M00_ARESETN": {
-            "type": "rst",
-            "direction": "I"
-          },
-          "S01_ACLK": {
-            "type": "clk",
-            "direction": "I",
-            "parameters": {
-              "ASSOCIATED_BUSIF": {
-                "value": "S01_AXI"
-              },
-              "ASSOCIATED_RESET": {
-                "value": "S01_ARESETN"
-              }
-            }
-          },
-          "S01_ARESETN": {
-            "type": "rst",
-            "direction": "I"
-          }
-        },
-        "components": {
-          "xbar": {
-            "vlnv": "xilinx.com:ip:axi_crossbar:2.1",
-            "xci_name": "zcu104_base_xbar_0",
-            "parameters": {
-              "NUM_MI": {
-                "value": "1"
-              },
-              "NUM_SI": {
-                "value": "2"
-              },
-              "STRATEGY": {
-                "value": "0"
-              }
-            },
-            "addressing": {
-              "interface_ports": {
-                "S00_AXI": {
-                  "mode": "Slave",
-                  "bridges": [
-                    "M00_AXI"
-                  ]
-                },
-                "S01_AXI": {
-                  "mode": "Slave",
-                  "bridges": [
-                    "M00_AXI"
-                  ]
-                }
-              }
-            }
-          },
-          "s00_couplers": {
-            "interface_ports": {
-              "M_AXI": {
-                "mode": "Master",
-                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-              },
-              "S_AXI": {
-                "mode": "Slave",
-                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-              }
-            },
-            "ports": {
-              "M_ACLK": {
-                "type": "clk",
-                "direction": "I",
-                "parameters": {
-                  "ASSOCIATED_BUSIF": {
-                    "value": "M_AXI"
-                  },
-                  "ASSOCIATED_RESET": {
-                    "value": "M_ARESETN"
-                  }
-                }
-              },
-              "M_ARESETN": {
-                "type": "rst",
-                "direction": "I"
-              },
-              "S_ACLK": {
-                "type": "clk",
-                "direction": "I",
-                "parameters": {
-                  "ASSOCIATED_BUSIF": {
-                    "value": "S_AXI"
-                  },
-                  "ASSOCIATED_RESET": {
-                    "value": "S_ARESETN"
-                  }
-                }
-              },
-              "S_ARESETN": {
-                "type": "rst",
-                "direction": "I"
-              }
-            },
-            "components": {
-              "s00_regslice": {
-                "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
-                "xci_name": "zcu104_base_s00_regslice_13",
-                "addressing": {
-                  "interface_ports": {
-                    "S_AXI": {
-                      "mode": "Slave",
-                      "bridges": [
-                        "M_AXI"
-                      ]
-                    }
-                  }
-                }
-              },
-              "auto_us": {
-                "vlnv": "xilinx.com:ip:axi_dwidth_converter:2.1",
-                "xci_name": "zcu104_base_auto_us_0",
-                "parameters": {
-                  "MI_DATA_WIDTH": {
-                    "value": "512"
-                  },
-                  "SI_DATA_WIDTH": {
-                    "value": "128"
-                  }
-                },
-                "addressing": {
-                  "interface_ports": {
-                    "S_AXI": {
-                      "mode": "Slave",
-                      "bridges": [
-                        "M_AXI"
-                      ]
-                    }
-                  }
-                }
-              },
-              "auto_rs_w": {
-                "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
-                "xci_name": "zcu104_base_auto_rs_w_0",
-                "parameters": {
-                  "REG_AR": {
-                    "value": "0"
-                  },
-                  "REG_AW": {
-                    "value": "0"
-                  },
-                  "REG_B": {
-                    "value": "0"
-                  },
-                  "REG_R": {
-                    "value": "0"
-                  },
-                  "REG_W": {
-                    "value": "1"
-                  }
-                },
-                "addressing": {
-                  "interface_ports": {
-                    "S_AXI": {
-                      "mode": "Slave",
-                      "bridges": [
-                        "M_AXI"
-                      ]
-                    }
-                  }
-                }
-              }
-            },
-            "interface_nets": {
-              "s00_couplers_to_s00_regslice": {
-                "interface_ports": [
-                  "S_AXI",
-                  "s00_regslice/S_AXI"
-                ]
-              },
-              "auto_us_to_auto_rs_w": {
-                "interface_ports": [
-                  "auto_us/M_AXI",
-                  "auto_rs_w/S_AXI"
-                ]
-              },
-              "auto_rs_w_to_s00_couplers": {
-                "interface_ports": [
-                  "M_AXI",
-                  "auto_rs_w/M_AXI"
-                ]
-              },
-              "s00_regslice_to_auto_us": {
-                "interface_ports": [
-                  "s00_regslice/M_AXI",
-                  "auto_us/S_AXI"
-                ]
-              }
-            },
-            "nets": {
-              "S_ACLK_1": {
-                "ports": [
-                  "S_ACLK",
-                  "s00_regslice/aclk",
-                  "auto_us/s_axi_aclk",
-                  "auto_rs_w/aclk"
-                ]
-              },
-              "S_ARESETN_1": {
-                "ports": [
-                  "S_ARESETN",
-                  "s00_regslice/aresetn",
-                  "auto_us/s_axi_aresetn",
-                  "auto_rs_w/aresetn"
-                ]
-              }
-            }
-          },
-          "s01_couplers": {
-            "interface_ports": {
-              "M_AXI": {
-                "mode": "Master",
-                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-              },
-              "S_AXI": {
-                "mode": "Slave",
-                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-              }
-            },
-            "ports": {
-              "M_ACLK": {
-                "type": "clk",
-                "direction": "I",
-                "parameters": {
-                  "ASSOCIATED_BUSIF": {
-                    "value": "M_AXI"
-                  },
-                  "ASSOCIATED_RESET": {
-                    "value": "M_ARESETN"
-                  }
-                }
-              },
-              "M_ARESETN": {
-                "type": "rst",
-                "direction": "I"
-              },
-              "S_ACLK": {
-                "type": "clk",
-                "direction": "I",
-                "parameters": {
-                  "ASSOCIATED_BUSIF": {
-                    "value": "S_AXI"
-                  },
-                  "ASSOCIATED_RESET": {
-                    "value": "S_ARESETN"
-                  }
-                }
-              },
-              "S_ARESETN": {
-                "type": "rst",
-                "direction": "I"
-              }
-            },
-            "components": {
-              "s01_regslice": {
-                "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
-                "xci_name": "zcu104_base_s01_regslice_0",
-                "addressing": {
-                  "interface_ports": {
-                    "S_AXI": {
-                      "mode": "Slave",
-                      "bridges": [
-                        "M_AXI"
-                      ]
-                    }
-                  }
-                }
-              }
-            },
-            "interface_nets": {
-              "s01_couplers_to_s01_regslice": {
-                "interface_ports": [
-                  "S_AXI",
-                  "s01_regslice/S_AXI"
-                ]
-              },
-              "s01_regslice_to_s01_couplers": {
-                "interface_ports": [
-                  "M_AXI",
-                  "s01_regslice/M_AXI"
-                ]
-              }
-            },
-            "nets": {
-              "S_ACLK_1": {
-                "ports": [
-                  "S_ACLK",
-                  "s01_regslice/aclk"
-                ]
-              },
-              "S_ARESETN_1": {
-                "ports": [
-                  "S_ARESETN",
-                  "s01_regslice/aresetn"
-                ]
-              }
-            }
-          },
-          "m00_couplers": {
-            "interface_ports": {
-              "M_AXI": {
-                "mode": "Master",
-                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-              },
-              "S_AXI": {
-                "mode": "Slave",
-                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-              }
-            },
-            "ports": {
-              "M_ACLK": {
-                "type": "clk",
-                "direction": "I",
-                "parameters": {
-                  "ASSOCIATED_BUSIF": {
-                    "value": "M_AXI"
-                  },
-                  "ASSOCIATED_RESET": {
-                    "value": "M_ARESETN"
-                  }
-                }
-              },
-              "M_ARESETN": {
-                "type": "rst",
-                "direction": "I"
-              },
-              "S_ACLK": {
-                "type": "clk",
-                "direction": "I",
-                "parameters": {
-                  "ASSOCIATED_BUSIF": {
-                    "value": "S_AXI"
-                  },
-                  "ASSOCIATED_RESET": {
-                    "value": "S_ARESETN"
-                  }
-                }
-              },
-              "S_ARESETN": {
-                "type": "rst",
-                "direction": "I"
-              }
-            },
-            "components": {
-              "m00_regslice": {
-                "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
-                "xci_name": "zcu104_base_m00_regslice_8",
-                "addressing": {
-                  "interface_ports": {
-                    "S_AXI": {
-                      "mode": "Slave",
-                      "bridges": [
-                        "M_AXI"
-                      ]
-                    }
-                  }
-                }
-              }
-            },
-            "interface_nets": {
-              "m00_couplers_to_m00_regslice": {
-                "interface_ports": [
-                  "S_AXI",
-                  "m00_regslice/S_AXI"
-                ]
-              },
-              "m00_regslice_to_m00_couplers": {
-                "interface_ports": [
-                  "M_AXI",
-                  "m00_regslice/M_AXI"
-                ]
-              }
-            },
-            "nets": {
-              "M_ACLK_1": {
-                "ports": [
-                  "M_ACLK",
-                  "m00_regslice/aclk"
-                ]
-              },
-              "M_ARESETN_1": {
-                "ports": [
-                  "M_ARESETN",
-                  "m00_regslice/aresetn"
-                ]
-              }
-            }
-          },
-          "s00_mmu": {
-            "vlnv": "xilinx.com:ip:axi_mmu:2.1",
-            "xci_name": "zcu104_base_s00_mmu_0",
-            "addressing": {
-              "interface_ports": {
-                "S_AXI": {
-                  "mode": "Slave",
-                  "bridges": [
-                    "M_AXI"
-                  ]
-                }
-              }
-            }
-          },
-          "s01_mmu": {
-            "vlnv": "xilinx.com:ip:axi_mmu:2.1",
-            "xci_name": "zcu104_base_s01_mmu_0",
-            "addressing": {
-              "interface_ports": {
-                "S_AXI": {
-                  "mode": "Slave",
-                  "bridges": [
-                    "M_AXI"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "interface_nets": {
-          "S01_AXI_1": {
-            "interface_ports": [
-              "S01_AXI",
-              "s01_mmu/S_AXI"
-            ]
-          },
-          "S00_AXI_1": {
-            "interface_ports": [
-              "S00_AXI",
-              "s00_mmu/S_AXI"
-            ]
-          },
-          "m00_couplers_to_interconnect_axihpm0fpd": {
-            "interface_ports": [
-              "M00_AXI",
-              "m00_couplers/M_AXI"
-            ]
-          },
-          "xbar_to_m00_couplers": {
-            "interface_ports": [
-              "xbar/M00_AXI",
-              "m00_couplers/S_AXI"
-            ]
-          },
-          "s00_mmu_M_AXI": {
-            "interface_ports": [
-              "s00_mmu/M_AXI",
-              "s00_couplers/S_AXI"
-            ]
-          },
-          "s00_couplers_to_xbar": {
-            "interface_ports": [
-              "s00_couplers/M_AXI",
-              "xbar/S00_AXI"
-            ]
-          },
-          "s01_couplers_to_xbar": {
-            "interface_ports": [
-              "s01_couplers/M_AXI",
-              "xbar/S01_AXI"
-            ]
-          },
-          "s01_mmu_M_AXI": {
-            "interface_ports": [
-              "s01_mmu/M_AXI",
-              "s01_couplers/S_AXI"
-            ]
-          }
-        },
-        "nets": {
-          "interconnect_axihpm0fpd_ACLK_net": {
-            "ports": [
-              "ACLK",
-              "xbar/aclk",
-              "s00_couplers/S_ACLK",
-              "s01_couplers/S_ACLK",
-              "s00_couplers/M_ACLK",
-              "s01_couplers/M_ACLK",
-              "m00_couplers/M_ACLK",
-              "m00_couplers/S_ACLK",
-              "s00_mmu/aclk",
-              "s01_mmu/aclk"
-            ]
-          },
-          "interconnect_axihpm0fpd_ARESETN_net": {
-            "ports": [
-              "ARESETN",
-              "xbar/aresetn",
-              "s00_couplers/S_ARESETN",
-              "s01_couplers/S_ARESETN",
-              "s00_couplers/M_ARESETN",
-              "s01_couplers/M_ARESETN",
-              "m00_couplers/M_ARESETN",
-              "m00_couplers/S_ARESETN",
-              "s00_mmu/aresetn",
-              "s01_mmu/aresetn"
-            ]
-          }
-        },
-        "hdl_attributes": {
-          "DPA_TRACE_MASTER": {
-            "value": "true"
-          }
         }
       },
       "interconnect_axilite": {
@@ -1157,7 +565,7 @@
             "components": {
               "s00_regslice": {
                 "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
-                "xci_name": "zcu104_base_s00_regslice_14",
+                "xci_name": "zcu104_base_s00_regslice_104",
                 "addressing": {
                   "interface_ports": {
                     "S_AXI": {
@@ -1277,7 +685,7 @@
             "components": {
               "m00_regslice": {
                 "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
-                "xci_name": "zcu104_base_m00_regslice_9",
+                "xci_name": "zcu104_base_m00_regslice_38",
                 "addressing": {
                   "interface_ports": {
                     "S_AXI": {
@@ -1411,18 +819,6 @@
           }
         },
         "interface_nets": {
-          "xbar_to_m00_couplers": {
-            "interface_ports": [
-              "xbar/M00_AXI",
-              "m00_couplers/S_AXI"
-            ]
-          },
-          "m00_couplers_to_interconnect_axilite": {
-            "interface_ports": [
-              "M00_AXI",
-              "m00_couplers/M_AXI"
-            ]
-          },
           "m01_couplers_to_interconnect_axilite": {
             "interface_ports": [
               "M01_AXI",
@@ -1435,16 +831,28 @@
               "m01_couplers/S_AXI"
             ]
           },
-          "s00_couplers_to_xbar": {
+          "xbar_to_m00_couplers": {
             "interface_ports": [
-              "s00_couplers/M_AXI",
-              "xbar/S00_AXI"
+              "xbar/M00_AXI",
+              "m00_couplers/S_AXI"
+            ]
+          },
+          "m00_couplers_to_interconnect_axilite": {
+            "interface_ports": [
+              "M00_AXI",
+              "m00_couplers/M_AXI"
             ]
           },
           "interconnect_axilite_to_s00_couplers": {
             "interface_ports": [
               "S00_AXI",
               "s00_couplers/S_AXI"
+            ]
+          },
+          "s00_couplers_to_xbar": {
+            "interface_ports": [
+              "s00_couplers/M_AXI",
+              "xbar/S00_AXI"
             ]
           }
         },
@@ -1777,7 +1185,7 @@
             "value": "IOPLL"
           },
           "PSU__CRL_APB__PL0_REF_CTRL__ACT_FREQMHZ": {
-            "value": "96.968727"
+            "value": "300.000000"
           },
           "PSU__CRL_APB__QSPI_REF_CTRL__ACT_FREQMHZ": {
             "value": "125.000000"
@@ -2372,24 +1780,644 @@
           "AXI_PORT": "M_AXI_HPM1_FPD {memport \"M_AXI_GP\"} S_AXI_HPC1_FPD {memport \"S_AXI_HPC\" sptag \"HPC1\" memory \"ps_e HPC1_DDR_LOW\"}  S_AXI_HP0_FPD {memport \"S_AXI_HP\" sptag \"HP0\" memory \"ps_e HP0_DDR_LOW\"}  S_AXI_HP1_FPD {memport \"S_AXI_HP\" sptag \"HP1\" memory \"ps_e HP1_DDR_LOW\"}  S_AXI_HP2_FPD {memport \"S_AXI_HP\" sptag \"HP2\" memory \"ps_e HP2_DDR_LOW\"}"
         }
       },
+      "axi_gpio_0": {
+        "vlnv": "xilinx.com:ip:axi_gpio:2.0",
+        "xci_name": "zcu104_base_axi_gpio_0_0",
+        "parameters": {
+          "C_INTERRUPT_PRESENT": {
+            "value": "0"
+          },
+          "GPIO2_BOARD_INTERFACE": {
+            "value": "dip_switch_4bits"
+          },
+          "GPIO_BOARD_INTERFACE": {
+            "value": "led_4bits"
+          }
+        }
+      },
+      "axi_interconnect_fp": {
+        "vlnv": "xilinx.com:ip:axi_interconnect:2.1",
+        "xci_name": "zcu104_base_axi_interconnect_0_0",
+        "parameters": {
+          "M00_HAS_REGSLICE": {
+            "value": "4"
+          },
+          "NUM_MI": {
+            "value": "1"
+          },
+          "NUM_SI": {
+            "value": "2"
+          },
+          "S00_HAS_REGSLICE": {
+            "value": "4"
+          },
+          "S01_HAS_REGSLICE": {
+            "value": "4"
+          }
+        },
+        "interface_ports": {
+          "S00_AXI": {
+            "mode": "Slave",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+          },
+          "M00_AXI": {
+            "mode": "Master",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+          },
+          "S01_AXI": {
+            "mode": "Slave",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+          }
+        },
+        "ports": {
+          "ACLK": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "ARESETN"
+              }
+            }
+          },
+          "ARESETN": {
+            "type": "rst",
+            "direction": "I"
+          },
+          "S00_ACLK": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_BUSIF": {
+                "value": "S00_AXI"
+              },
+              "ASSOCIATED_RESET": {
+                "value": "S00_ARESETN"
+              }
+            }
+          },
+          "S00_ARESETN": {
+            "type": "rst",
+            "direction": "I"
+          },
+          "M00_ACLK": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_BUSIF": {
+                "value": "M00_AXI"
+              },
+              "ASSOCIATED_RESET": {
+                "value": "M00_ARESETN"
+              }
+            }
+          },
+          "M00_ARESETN": {
+            "type": "rst",
+            "direction": "I"
+          },
+          "S01_ACLK": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_BUSIF": {
+                "value": "S01_AXI"
+              },
+              "ASSOCIATED_RESET": {
+                "value": "S01_ARESETN"
+              }
+            }
+          },
+          "S01_ARESETN": {
+            "type": "rst",
+            "direction": "I"
+          }
+        },
+        "components": {
+          "xbar": {
+            "vlnv": "xilinx.com:ip:axi_crossbar:2.1",
+            "xci_name": "zcu104_base_xbar_2",
+            "parameters": {
+              "NUM_MI": {
+                "value": "1"
+              },
+              "NUM_SI": {
+                "value": "2"
+              },
+              "STRATEGY": {
+                "value": "0"
+              }
+            },
+            "addressing": {
+              "interface_ports": {
+                "S00_AXI": {
+                  "mode": "Slave",
+                  "bridges": [
+                    "M00_AXI"
+                  ]
+                },
+                "S01_AXI": {
+                  "mode": "Slave",
+                  "bridges": [
+                    "M00_AXI"
+                  ]
+                }
+              }
+            }
+          },
+          "s00_couplers": {
+            "interface_ports": {
+              "M_AXI": {
+                "mode": "Master",
+                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+              },
+              "S_AXI": {
+                "mode": "Slave",
+                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+              }
+            },
+            "ports": {
+              "M_ACLK": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "M_AXI"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "M_ARESETN"
+                  }
+                }
+              },
+              "M_ARESETN": {
+                "type": "rst",
+                "direction": "I"
+              },
+              "S_ACLK": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "S_AXI"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "S_ARESETN"
+                  }
+                }
+              },
+              "S_ARESETN": {
+                "type": "rst",
+                "direction": "I"
+              }
+            },
+            "components": {
+              "s00_regslice": {
+                "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
+                "xci_name": "zcu104_base_s00_regslice_105",
+                "addressing": {
+                  "interface_ports": {
+                    "S_AXI": {
+                      "mode": "Slave",
+                      "bridges": [
+                        "M_AXI"
+                      ]
+                    }
+                  }
+                }
+              },
+              "auto_us": {
+                "vlnv": "xilinx.com:ip:axi_dwidth_converter:2.1",
+                "xci_name": "zcu104_base_auto_us_0",
+                "parameters": {
+                  "MI_DATA_WIDTH": {
+                    "value": "512"
+                  },
+                  "SI_DATA_WIDTH": {
+                    "value": "128"
+                  }
+                },
+                "addressing": {
+                  "interface_ports": {
+                    "S_AXI": {
+                      "mode": "Slave",
+                      "bridges": [
+                        "M_AXI"
+                      ]
+                    }
+                  }
+                }
+              },
+              "auto_rs_w": {
+                "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
+                "xci_name": "zcu104_base_auto_rs_w_0",
+                "parameters": {
+                  "REG_AR": {
+                    "value": "0"
+                  },
+                  "REG_AW": {
+                    "value": "0"
+                  },
+                  "REG_B": {
+                    "value": "0"
+                  },
+                  "REG_R": {
+                    "value": "0"
+                  },
+                  "REG_W": {
+                    "value": "1"
+                  }
+                },
+                "addressing": {
+                  "interface_ports": {
+                    "S_AXI": {
+                      "mode": "Slave",
+                      "bridges": [
+                        "M_AXI"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "interface_nets": {
+              "auto_us_to_auto_rs_w": {
+                "interface_ports": [
+                  "auto_us/M_AXI",
+                  "auto_rs_w/S_AXI"
+                ]
+              },
+              "s00_regslice_to_auto_us": {
+                "interface_ports": [
+                  "s00_regslice/M_AXI",
+                  "auto_us/S_AXI"
+                ]
+              },
+              "auto_rs_w_to_s00_couplers": {
+                "interface_ports": [
+                  "M_AXI",
+                  "auto_rs_w/M_AXI"
+                ]
+              },
+              "s00_couplers_to_s00_regslice": {
+                "interface_ports": [
+                  "S_AXI",
+                  "s00_regslice/S_AXI"
+                ]
+              }
+            },
+            "nets": {
+              "S_ACLK_1": {
+                "ports": [
+                  "S_ACLK",
+                  "s00_regslice/aclk",
+                  "auto_us/s_axi_aclk",
+                  "auto_rs_w/aclk"
+                ]
+              },
+              "S_ARESETN_1": {
+                "ports": [
+                  "S_ARESETN",
+                  "s00_regslice/aresetn",
+                  "auto_us/s_axi_aresetn",
+                  "auto_rs_w/aresetn"
+                ]
+              }
+            }
+          },
+          "s01_couplers": {
+            "interface_ports": {
+              "M_AXI": {
+                "mode": "Master",
+                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+              },
+              "S_AXI": {
+                "mode": "Slave",
+                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+              }
+            },
+            "ports": {
+              "M_ACLK": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "M_AXI"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "M_ARESETN"
+                  }
+                }
+              },
+              "M_ARESETN": {
+                "type": "rst",
+                "direction": "I"
+              },
+              "S_ACLK": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "S_AXI"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "S_ARESETN"
+                  }
+                }
+              },
+              "S_ARESETN": {
+                "type": "rst",
+                "direction": "I"
+              }
+            },
+            "components": {
+              "s01_regslice": {
+                "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
+                "xci_name": "zcu104_base_s01_regslice_0",
+                "addressing": {
+                  "interface_ports": {
+                    "S_AXI": {
+                      "mode": "Slave",
+                      "bridges": [
+                        "M_AXI"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "interface_nets": {
+              "s01_regslice_to_s01_couplers": {
+                "interface_ports": [
+                  "M_AXI",
+                  "s01_regslice/M_AXI"
+                ]
+              },
+              "s01_couplers_to_s01_regslice": {
+                "interface_ports": [
+                  "S_AXI",
+                  "s01_regslice/S_AXI"
+                ]
+              }
+            },
+            "nets": {
+              "S_ACLK_1": {
+                "ports": [
+                  "S_ACLK",
+                  "s01_regslice/aclk"
+                ]
+              },
+              "S_ARESETN_1": {
+                "ports": [
+                  "S_ARESETN",
+                  "s01_regslice/aresetn"
+                ]
+              }
+            }
+          },
+          "m00_couplers": {
+            "interface_ports": {
+              "M_AXI": {
+                "mode": "Master",
+                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+              },
+              "S_AXI": {
+                "mode": "Slave",
+                "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
+              }
+            },
+            "ports": {
+              "M_ACLK": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "M_AXI"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "M_ARESETN"
+                  }
+                }
+              },
+              "M_ARESETN": {
+                "type": "rst",
+                "direction": "I"
+              },
+              "S_ACLK": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "S_AXI"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "S_ARESETN"
+                  }
+                }
+              },
+              "S_ARESETN": {
+                "type": "rst",
+                "direction": "I"
+              }
+            },
+            "components": {
+              "m00_regslice": {
+                "vlnv": "xilinx.com:ip:axi_register_slice:2.1",
+                "xci_name": "zcu104_base_m00_regslice_39",
+                "addressing": {
+                  "interface_ports": {
+                    "S_AXI": {
+                      "mode": "Slave",
+                      "bridges": [
+                        "M_AXI"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "interface_nets": {
+              "m00_regslice_to_m00_couplers": {
+                "interface_ports": [
+                  "M_AXI",
+                  "m00_regslice/M_AXI"
+                ]
+              },
+              "m00_couplers_to_m00_regslice": {
+                "interface_ports": [
+                  "S_AXI",
+                  "m00_regslice/S_AXI"
+                ]
+              }
+            },
+            "nets": {
+              "M_ACLK_1": {
+                "ports": [
+                  "M_ACLK",
+                  "m00_regslice/aclk"
+                ]
+              },
+              "M_ARESETN_1": {
+                "ports": [
+                  "M_ARESETN",
+                  "m00_regslice/aresetn"
+                ]
+              }
+            }
+          },
+          "s00_mmu": {
+            "vlnv": "xilinx.com:ip:axi_mmu:2.1",
+            "xci_name": "zcu104_base_s00_mmu_0",
+            "addressing": {
+              "interface_ports": {
+                "S_AXI": {
+                  "mode": "Slave",
+                  "bridges": [
+                    "M_AXI"
+                  ]
+                }
+              }
+            }
+          },
+          "s01_mmu": {
+            "vlnv": "xilinx.com:ip:axi_mmu:2.1",
+            "xci_name": "zcu104_base_s01_mmu_0",
+            "addressing": {
+              "interface_ports": {
+                "S_AXI": {
+                  "mode": "Slave",
+                  "bridges": [
+                    "M_AXI"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "interface_nets": {
+          "S01_AXI_1": {
+            "interface_ports": [
+              "S01_AXI",
+              "s01_mmu/S_AXI"
+            ]
+          },
+          "S00_AXI_1": {
+            "interface_ports": [
+              "S00_AXI",
+              "s00_mmu/S_AXI"
+            ]
+          },
+          "s01_couplers_to_xbar": {
+            "interface_ports": [
+              "s01_couplers/M_AXI",
+              "xbar/S01_AXI"
+            ]
+          },
+          "s00_mmu_M_AXI": {
+            "interface_ports": [
+              "s00_mmu/M_AXI",
+              "s00_couplers/S_AXI"
+            ]
+          },
+          "s00_couplers_to_xbar": {
+            "interface_ports": [
+              "s00_couplers/M_AXI",
+              "xbar/S00_AXI"
+            ]
+          },
+          "s01_mmu_M_AXI": {
+            "interface_ports": [
+              "s01_mmu/M_AXI",
+              "s01_couplers/S_AXI"
+            ]
+          },
+          "m00_couplers_to_axi_interconnect_fp": {
+            "interface_ports": [
+              "M00_AXI",
+              "m00_couplers/M_AXI"
+            ]
+          },
+          "xbar_to_m00_couplers": {
+            "interface_ports": [
+              "xbar/M00_AXI",
+              "m00_couplers/S_AXI"
+            ]
+          }
+        },
+        "nets": {
+          "axi_interconnect_fp_ACLK_net": {
+            "ports": [
+              "ACLK",
+              "xbar/aclk",
+              "s00_couplers/S_ACLK",
+              "s01_couplers/S_ACLK",
+              "s00_couplers/M_ACLK",
+              "s01_couplers/M_ACLK",
+              "m00_couplers/M_ACLK",
+              "m00_couplers/S_ACLK",
+              "s00_mmu/aclk",
+              "s01_mmu/aclk"
+            ]
+          },
+          "axi_interconnect_fp_ARESETN_net": {
+            "ports": [
+              "ARESETN",
+              "xbar/aresetn",
+              "s00_couplers/S_ARESETN",
+              "s01_couplers/S_ARESETN",
+              "s00_couplers/M_ARESETN",
+              "s01_couplers/M_ARESETN",
+              "m00_couplers/M_ARESETN",
+              "m00_couplers/S_ARESETN",
+              "s00_mmu/aresetn",
+              "s01_mmu/aresetn"
+            ]
+          }
+        }
+      },
       "ddr4_0": {
         "vlnv": "xilinx.com:ip:ddr4:2.2",
-        "xci_name": "zcu104_base_ddr4_0_0",
+        "xci_name": "zcu104_base_ddr4_1_0",
         "parameters": {
           "ADDN_UI_CLKOUT1_FREQ_HZ": {
             "value": "None"
           },
-          "ADDN_UI_CLKOUT2_FREQ_HZ": {
-            "value": "None"
+          "C0.BANK_GROUP_WIDTH": {
+            "value": "1"
           },
           "C0.DDR4_AxiAddressWidth": {
             "value": "32"
+          },
+          "C0.DDR4_AxiDataWidth": {
+            "value": "512"
+          },
+          "C0.DDR4_CasLatency": {
+            "value": "15"
+          },
+          "C0.DDR4_CasWriteLatency": {
+            "value": "11"
+          },
+          "C0.DDR4_DataWidth": {
+            "value": "64"
+          },
+          "C0.DDR4_InputClockPeriod": {
+            "value": "3336"
+          },
+          "C0.DDR4_MemoryPart": {
+            "value": "MTA4ATF51264HZ-2G6"
+          },
+          "C0.DDR4_MemoryType": {
+            "value": "SODIMMs"
+          },
+          "C0.DDR4_TimePeriod": {
+            "value": "938"
           },
           "C0_CLOCK_BOARD_INTERFACE": {
             "value": "clk_300mhz"
           },
           "C0_DDR4_BOARD_INTERFACE": {
-            "value": "ddr4_sdram"
+            "value": "Custom"
+          },
+          "RESET_BOARD_INTERFACE": {
+            "value": "Custom"
           }
         }
       },
@@ -2402,21 +2430,6 @@
           },
           "C_SIZE": {
             "value": "1"
-          }
-        }
-      },
-      "axi_gpio_0": {
-        "vlnv": "xilinx.com:ip:axi_gpio:2.0",
-        "xci_name": "zcu104_base_axi_gpio_0_0",
-        "parameters": {
-          "C_INTERRUPT_PRESENT": {
-            "value": "1"
-          },
-          "GPIO2_BOARD_INTERFACE": {
-            "value": "push_button_4bits"
-          },
-          "GPIO_BOARD_INTERFACE": {
-            "value": "led_4bits"
           }
         }
       },
@@ -2460,28 +2473,10 @@
       }
     },
     "interface_nets": {
-      "ps_e_M_AXI_HPM0_LPD": {
+      "ddr4_1_C0_DDR4": {
         "interface_ports": [
-          "interconnect_axilite/S00_AXI",
-          "ps_e/M_AXI_HPM0_LPD"
-        ]
-      },
-      "interconnect_axihpm0fpd_M00_AXI": {
-        "interface_ports": [
-          "interconnect_axihpm0fpd/M00_AXI",
-          "ddr4_0/C0_DDR4_S_AXI"
-        ]
-      },
-      "model_dma_0_host": {
-        "interface_ports": [
-          "model_dma_0/host",
-          "axi_interconnect_hp3/S00_AXI"
-        ]
-      },
-      "model_dma_0_ddr": {
-        "interface_ports": [
-          "model_dma_0/ddr",
-          "interconnect_axihpm0fpd/S01_AXI"
+          "c0_ddr4",
+          "ddr4_0/C0_DDR4"
         ]
       },
       "interconnect_axilite_M01_AXI": {
@@ -2490,34 +2485,10 @@
           "axi_gpio_0/S_AXI"
         ]
       },
-      "axi_gpio_0_GPIO": {
-        "interface_ports": [
-          "GPIO_0",
-          "axi_gpio_0/GPIO"
-        ]
-      },
       "axi_gpio_0_GPIO2": {
         "interface_ports": [
           "GPIO2_0",
           "axi_gpio_0/GPIO2"
-        ]
-      },
-      "axi_interconnect_hp3_M00_AXI": {
-        "interface_ports": [
-          "axi_interconnect_hp3/M00_AXI",
-          "ps_e/S_AXI_HPC0_FPD"
-        ]
-      },
-      "interconnect_axilite_M00_AXI": {
-        "interface_ports": [
-          "interconnect_axilite/M00_AXI",
-          "model_dma_0/s_axi"
-        ]
-      },
-      "ddr4_0_C0_DDR4": {
-        "interface_ports": [
-          "C0_DDR4_0",
-          "ddr4_0/C0_DDR4"
         ]
       },
       "C0_SYS_CLK_0_1": {
@@ -2526,10 +2497,52 @@
           "ddr4_0/C0_SYS_CLK"
         ]
       },
+      "ps_e_M_AXI_HPM0_LPD": {
+        "interface_ports": [
+          "interconnect_axilite/S00_AXI",
+          "ps_e/M_AXI_HPM0_LPD"
+        ]
+      },
+      "axi_interconnect_fp_M00_AXI": {
+        "interface_ports": [
+          "axi_interconnect_fp/M00_AXI",
+          "ddr4_0/C0_DDR4_S_AXI"
+        ]
+      },
+      "axi_interconnect_hp3_M00_AXI": {
+        "interface_ports": [
+          "axi_interconnect_hp/M00_AXI",
+          "ps_e/S_AXI_HPC0_FPD"
+        ]
+      },
       "ps_e_M_AXI_HPM0_FPD": {
         "interface_ports": [
-          "interconnect_axihpm0fpd/S00_AXI",
-          "ps_e/M_AXI_HPM0_FPD"
+          "ps_e/M_AXI_HPM0_FPD",
+          "axi_interconnect_fp/S00_AXI"
+        ]
+      },
+      "model_dma_0_host": {
+        "interface_ports": [
+          "model_dma_0/host",
+          "axi_interconnect_hp/S00_AXI"
+        ]
+      },
+      "axi_gpio_0_GPIO": {
+        "interface_ports": [
+          "GPIO_0",
+          "axi_gpio_0/GPIO"
+        ]
+      },
+      "model_dma_0_ddr": {
+        "interface_ports": [
+          "model_dma_0/ddr",
+          "axi_interconnect_fp/S01_AXI"
+        ]
+      },
+      "interconnect_axilite_M00_AXI": {
+        "interface_ports": [
+          "interconnect_axilite/M00_AXI",
+          "model_dma_0/s_axi"
         ]
       }
     },
@@ -2537,59 +2550,18 @@
       "proc_sys_reset_1_interconnect_aresetn": {
         "ports": [
           "proc_sys_reset_0/interconnect_aresetn",
-          "axi_interconnect_hp3/ARESETN",
-          "axi_interconnect_hp3/M00_ARESETN",
-          "axi_interconnect_hp3/S00_ARESETN",
-          "interconnect_axihpm0fpd/ARESETN",
-          "interconnect_axihpm0fpd/M00_ARESETN",
-          "interconnect_axihpm0fpd/S00_ARESETN",
+          "axi_interconnect_hp/ARESETN",
+          "axi_interconnect_hp/M00_ARESETN",
+          "axi_interconnect_hp/S00_ARESETN",
           "interconnect_axilite/ARESETN",
           "interconnect_axilite/M00_ARESETN",
           "interconnect_axilite/S00_ARESETN",
-          "interconnect_axihpm0fpd/S01_ARESETN",
           "interconnect_axilite/M01_ARESETN",
-          "axi_gpio_0/s_axi_aresetn"
-        ]
-      },
-      "ddr4_0_c0_ddr4_ui_clk": {
-        "ports": [
-          "ddr4_0/c0_ddr4_ui_clk",
-          "proc_sys_reset_0/slowest_sync_clk",
-          "axi_interconnect_hp3/ACLK",
-          "axi_interconnect_hp3/M00_ACLK",
-          "axi_interconnect_hp3/S00_ACLK",
-          "interconnect_axihpm0fpd/ACLK",
-          "interconnect_axihpm0fpd/M00_ACLK",
-          "interconnect_axihpm0fpd/S00_ACLK",
-          "ps_e/maxihpm0_fpd_aclk",
-          "interconnect_axilite/ACLK",
-          "interconnect_axilite/M00_ACLK",
-          "interconnect_axilite/S00_ACLK",
-          "ps_e/maxihpm0_lpd_aclk",
-          "interconnect_axihpm0fpd/S01_ACLK",
-          "interconnect_axilite/M01_ACLK",
-          "axi_gpio_0/s_axi_aclk",
-          "ps_e/saxihpc0_fpd_aclk",
-          "model_dma_0/clk",
-          "model_dma_0/ddr_clk"
-        ]
-      },
-      "ps_e_pl_resetn0": {
-        "ports": [
-          "ps_e/pl_resetn0",
-          "util_vector_logic_0/Op1"
-        ]
-      },
-      "util_vector_logic_0_Res": {
-        "ports": [
-          "util_vector_logic_0/Res",
-          "ddr4_0/sys_rst"
-        ]
-      },
-      "ddr4_0_c0_ddr4_ui_clk_sync_rst": {
-        "ports": [
-          "ddr4_0/c0_ddr4_ui_clk_sync_rst",
-          "proc_sys_reset_0/ext_reset_in"
+          "axi_gpio_0/s_axi_aresetn",
+          "axi_interconnect_fp/ARESETN",
+          "axi_interconnect_fp/S00_ARESETN",
+          "axi_interconnect_fp/S01_ARESETN",
+          "axi_interconnect_fp/M00_ARESETN"
         ]
       },
       "ddr4_0_c0_init_calib_complete": {
@@ -2611,6 +2583,47 @@
           "model_dma_0/complete_int",
           "ps_e/pl_ps_irq0"
         ]
+      },
+      "ddr4_0_c0_ddr4_ui_clk1": {
+        "ports": [
+          "ddr4_0/c0_ddr4_ui_clk",
+          "axi_interconnect_fp/M00_ACLK",
+          "proc_sys_reset_0/slowest_sync_clk",
+          "axi_interconnect_hp/ACLK",
+          "axi_interconnect_hp/M00_ACLK",
+          "axi_interconnect_hp/S00_ACLK",
+          "interconnect_axilite/ACLK",
+          "interconnect_axilite/M00_ACLK",
+          "interconnect_axilite/S00_ACLK",
+          "ps_e/maxihpm0_lpd_aclk",
+          "interconnect_axilite/M01_ACLK",
+          "axi_gpio_0/s_axi_aclk",
+          "ps_e/saxihpc0_fpd_aclk",
+          "axi_interconnect_fp/ACLK",
+          "axi_interconnect_fp/S00_ACLK",
+          "axi_interconnect_fp/S01_ACLK",
+          "ps_e/maxihpm0_fpd_aclk",
+          "model_dma_0/clk",
+          "model_dma_0/ddr_clk"
+        ]
+      },
+      "ddr4_1_c0_ddr4_ui_clk_sync_rst": {
+        "ports": [
+          "ddr4_0/c0_ddr4_ui_clk_sync_rst",
+          "proc_sys_reset_0/ext_reset_in"
+        ]
+      },
+      "ps_e_pl_resetn0": {
+        "ports": [
+          "ps_e/pl_resetn0",
+          "util_vector_logic_0/Op1"
+        ]
+      },
+      "util_vector_logic_0_Res": {
+        "ports": [
+          "util_vector_logic_0/Res",
+          "ddr4_0/sys_rst"
+        ]
       }
     },
     "addressing": {
@@ -2622,7 +2635,7 @@
             "segments": {
               "SEG_axi_gpio_0_Reg": {
                 "address_block": "/axi_gpio_0/S_AXI/Reg",
-                "offset": "0x0080010000",
+                "offset": "0x0080000000",
                 "range": "64K"
               },
               "SEG_ddr4_0_C0_DDR4_ADDRESS_BLOCK": {
@@ -2632,7 +2645,7 @@
               },
               "SEG_model_dma_0_reg0": {
                 "address_block": "/model_dma_0/s_axi/reg0",
-                "offset": "0x0080000000",
+                "offset": "0x0080010000",
                 "range": "64K"
               }
             }

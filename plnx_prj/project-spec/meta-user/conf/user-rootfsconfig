@@ -6,3 +6,4 @@ CONFIG_peekpoke
 CONFIG_accdnn
 CONFIG_gpio
 CONFIG_gpio-app
+CONFIG_accdnn-app
