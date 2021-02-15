@@ -3,6 +3,7 @@
 
 #define WGT_SIZE 292352 // predefined model weight size in bytes
 #define IMG_SIZE 8192   // predefined image size in bytes
+#define OUT_SIZE 4096   // predefined output size in bytes
 
 struct accdnn_dev {
     dev_t dev_type;
