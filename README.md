@@ -9,21 +9,21 @@ In AccDNN directory:
     `python ./codegen.py example/cifar10/cifar10_quick.prototxt example/cifar10/cifar10_quick_iter_5000.caffemodel --optim_file example/cifar10/optim_cifar10.conf`  
 2. Generate additional HDL and IP by  
     `./bin/sim_file_gen.sh`   
-3. Generate complete accelerator as a Vivado project by
+3. Generate complete accelerator as a Vivado project by    
     `cd ./lib/ip`  
     `vivado -mode batch -source ips.tcl`  
 4. Package previous project as an IP in GUI. Here, we need to    
+   -- store this IP in AccDnn/build/model_ip directory;    
    -- Associate "ddr" interface to "ddr_clk";    
-   -- edit port "complete_int", set SENSITIVITY to EDGE RISING;
-   -- edit port clk & ddr_clk, set FREQ_HZ to user defined;     
-   -- store this IP in AccDnn/build/model_ip directory.
+   -- edit interface "complete_int", set SENSITIVITY to EDGE RISING;
+   -- edit interface clk & ddr_clk, set FREQ_HZ to user defined. 
 
 In zcu104_accdnn directory:
 
 1. Generate Vivado project by    
     `vivado -mode batch -source ./zcu104_base.tcl`   
-2. Check project design and generate bitstream in Vivado GUI, then export .XSA file in File/export/export hardware/fixed/include bitstream menu.   
-3. run script to generate BIN file
+2. Check project design and generate bitstream in Vivado GUI, then export .XSA file in File/export/export hardware/fixed/include bitstream menu.    
+3. run script to generate BIN file     
    `./bin_file_gen.sh`    
 
 In plnx_prj directory:
