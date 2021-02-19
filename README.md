@@ -7,17 +7,16 @@ In AccDNN directory:
 
 1. Generate HDL source by    
     `python ./codegen.py example/cifar10/cifar10_quick.prototxt example/cifar10/cifar10_quick_iter_5000.caffemodel --optim_file example/cifar10/optim_cifar10.conf`  
-2. Generate elementary IP by  
-    `vivado -mode batch -source ./build/ips.tcl`  
-3. Generate additional HDL by  
-    `./binsim_file_gen.sh`   
-4. Generate complete accelerator as a Vivado project by
+2. Generate additional HDL and IP by  
+    `./bin/sim_file_gen.sh`   
+3. Generate complete accelerator as a Vivado project by
     `cd ./lib/ip`  
     `vivado -mode batch -source ips.tcl`  
-5. Package previous project as an IP in GUI. Here, we need to    
+4. Package previous project as an IP in GUI. Here, we need to    
    -- Associate "ddr" interface to "ddr_clk";    
    -- edit port "complete_int", set SENSITIVITY to EDGE RISING;
-   -- edit port clk & ddr_clk, set FREQ_HZ to user defined.
+   -- edit port clk & ddr_clk, set FREQ_HZ to user defined;     
+   -- store this IP in AccDnn/build/model_ip directory.
 
 In zcu104_accdnn directory:
 
