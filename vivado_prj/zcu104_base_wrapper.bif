@@ -1,0 +1,4 @@
+all:
+{
+  ./vivado_prj.runs/impl_1/zcu104_base_wrapper.bit
+}
