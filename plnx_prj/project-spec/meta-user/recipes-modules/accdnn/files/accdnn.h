@@ -3,7 +3,8 @@
 
 #define WGT_SIZE 292352 // predefined model weight size in bytes
 #define IMG_SIZE 8192   // predefined image size in bytes
-#define OUT_SIZE 4096   // predefined output size in bytes
+#define OUT_SIZE 64   // predefined output size in bytes
+#define DEV_WGT_PHYADDR 0  // physical address of weights in device memory
 
 struct accdnn_dev {
     dev_t dev_type;
@@ -17,14 +18,11 @@ struct accdnn_dev {
     int irq_num;
 };
 
-struct accdnn_wgt_mem {
-    unsigned long host_virtaddr;
-    phys_addr_t   dev_phyaddr;
-};
-
-struct accdnn_io_mem {
-    unsigned long   host_input_virtaddr;
-    unsigned long   host_output_virtaddr;
+struct accdnn_host_mem {
+    unsigned long long  weight_virtaddr;
+    unsigned long long  input_virtaddr;
+    unsigned long long  output_virtaddr;
+    unsigned int        img_num;
 };
 
 /* Register offset */
@@ -42,16 +40,18 @@ struct accdnn_io_mem {
 #define ACCDNN_CTRL_EINT_MASK   0x00000004  /* Enable interrupt */
 #define ACCDNN_CTRL_RST_MASK    0x00000008  /* Reset device */
 
-#define ACCDNN_STAT_READY_MASK  0x00000001  /* Ready to start */
-#define ACCDNN_STAT_BUSY_MASK   0x00000002  /* Inference finished */
-#define ACCDNN_STAT_DONE_MASK   0x00000004  /* Device running */
+#define ACCDNN_STAT_HASWGT_MASK 0x00000001  /* Weights has been loaded */
+#define ACCDNN_STAT_HASNUM_MASK 0x00000002  /* Image number has been set */
+#define ACCDNN_STAT_BUSY_MASK   0x00000004  /* Processing */
+#define ACCDNN_STAT_RDY_MASK    0x00000008  /* HASWGT & HASNUM & !BUSY */
+#define ACCDNN_STAT_DONE_MASK   0x00000010  /* Inference finish */
 
 /* IOCTL defines */
 #define ACCDNN_IOCTL_BASE   'A'
 #define ACCDNN_RESET_MODULE     _IO(ACCDNN_IOCTL_BASE, 0)
-#define ACCDNN_LOAD_WEIGHTS     _IOW(ACCDNN_IOCTL_BASE, 1, struct accdnn_wgt_mem*)
+#define ACCDNN_LOAD_WEIGHTS     _IOW(ACCDNN_IOCTL_BASE, 1, struct accdnn_host_mem*)
 #define ACCDNN_CFG_IRQ          _IOW(ACCDNN_IOCTL_BASE, 2, unsigned int)
-#define ACCDNN_START_INF        _IOW(ACCDNN_IOCTL_BASE, 3, struct accdnn_io_mem*)
+#define ACCDNN_START_INF        _IOW(ACCDNN_IOCTL_BASE, 3, struct accdnn_host_mem*)
 #define ACCDNN_CHECK_STAT       _IOR(ACCDNN_IOCTL_BASE, 4, unsigned int*)
 
 #endif

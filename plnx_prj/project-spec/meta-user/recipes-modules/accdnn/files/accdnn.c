@@ -32,6 +32,7 @@
 #include <linux/pagemap.h>
 //#include <asm-generic/page.h>
 #include <asm-generic/barrier.h>
+#include <linux/jiffies.h>
 #include "accdnn.h"
 
 /* Standard module information, edit as appropriate */
@@ -90,19 +91,23 @@ static long accdnn_ioctl(struct file *filep, unsigned int cmd, unsigned long arg
 {
 	volatile u32 ctrl_reg;
 	volatile u32 stat_reg;
-	int page_num;
-	struct page *pages;
+	// int page_num;
+	// struct page *pages;
 	struct device *pdev; 
 	void* wgt_kvaddress;
-	unsigned long wgt_uvaddress;
+	unsigned long long wgt_uvaddress;
 	dma_addr_t wgt_host_phyaddr;
 	phys_addr_t wgt_dev_phyaddr;
 	void* input_kvaddress;
 	void* output_kvaddress;
 	dma_addr_t input_phyaddr;
 	dma_addr_t output_phyaddr;
+	unsigned int img_num = 1;
+	unsigned long j_start;
+	unsigned long j_end;
 
 	pdev = &(accdnn_lp->pdev->dev);
+	img_num = ((struct accdnn_host_mem*)arg)->img_num;
 	switch (cmd)
 	{
 	case ACCDNN_RESET_MODULE:
@@ -115,7 +120,7 @@ static long accdnn_ioctl(struct file *filep, unsigned int cmd, unsigned long arg
 		break;
 	case ACCDNN_LOAD_WEIGHTS:
 		// Map user space to kernel space
-		wgt_uvaddress = ((struct accdnn_wgt_mem*)arg)->host_virtaddr;
+		wgt_uvaddress = ((struct accdnn_host_mem*)arg)->weight_virtaddr;
 		// down_read(&current->mm->mmap_sem); // read-only protect
 		// page_num = get_user_pages(wgt_uvaddress,
 		// 			(WGT_SIZE >> 12) + 1, // TODO: Calculate how many pages to map
@@ -134,19 +139,22 @@ static long accdnn_ioctl(struct file *filep, unsigned int cmd, unsigned long arg
 		// }
 
 		wgt_kvaddress = kmalloc(WGT_SIZE, GFP_KERNEL);
+		if (!wgt_kvaddress) {
+			printk("Failed to allocate kernel memory for weights.\n");
+			return -ENOMEM;
+		}
 		copy_from_user(wgt_kvaddress, (const void __user *)wgt_uvaddress, WGT_SIZE);
 
 		// Set weights src/dst address
 		wgt_host_phyaddr = dma_map_single(pdev, wgt_kvaddress, WGT_SIZE, DMA_TO_DEVICE);
-		wgt_dev_phyaddr = ((struct accdnn_wgt_mem*)arg)->dev_phyaddr;
+		wgt_dev_phyaddr = DEV_WGT_PHYADDR;
 		iowrite32(wgt_host_phyaddr, accdnn_lp->virtaddr + ACCDNN_HWGT_OFST);
 		iowrite32(wgt_dev_phyaddr, accdnn_lp->virtaddr + ACCDNN_DWGT_OFST);
-		printk("Physical address in host: 0x%08X\n", (unsigned int)wgt_host_phyaddr);
-		printk("Physical address in device: 0x%08X\n", (unsigned int)wgt_dev_phyaddr);
+		// printk("Weights physical address in host: 0x%08X\n", (unsigned int)wgt_host_phyaddr);
+		// printk("Weights physical address in device: 0x%08X\n", (unsigned int)wgt_dev_phyaddr);
 
 		// Start to load weights
-		// TODO: set image num register
-		iowrite32(1, accdnn_lp->virtaddr + ACCDNN_SIZE_OFST);
+		iowrite32(img_num, accdnn_lp->virtaddr + ACCDNN_SIZE_OFST);
 		mb();
 		ctrl_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
 		ctrl_reg = ctrl_reg | ACCDNN_CTRL_LOAD_MASK;
@@ -161,14 +169,14 @@ static long accdnn_ioctl(struct file *filep, unsigned int cmd, unsigned long arg
 		{
 			msleep(10);
 			stat_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_STAT_OFST);
-		} while ((stat_reg & ACCDNN_STAT_READY_MASK) == 0);
+		} while ((stat_reg & ACCDNN_STAT_HASWGT_MASK) == 0);
+		// printk("Load weights done.\n");
 
 		// Finish up
-		dma_unmap_single(pdev, wgt_host_phyaddr, IMG_SIZE, DMA_TO_DEVICE);
+		dma_unmap_single(pdev, wgt_host_phyaddr, WGT_SIZE, DMA_TO_DEVICE);
 		// kunmap(pages);
 		// up_read(&current->mm->mmap_sem);
 		kfree(wgt_kvaddress);
-		printk("Weights loaded to dev\n");		
 		break;
 	case ACCDNN_CFG_IRQ:			
 		if (arg != 0) // Enable IRQ
@@ -186,23 +194,33 @@ static long accdnn_ioctl(struct file *filep, unsigned int cmd, unsigned long arg
 		break;
 	case ACCDNN_START_INF:
 		// Map user space to kernel space
-		input_kvaddress = kzalloc(IMG_SIZE, GFP_KERNEL);
+		input_kvaddress = kzalloc(IMG_SIZE * img_num, GFP_KERNEL);
+		if (!input_kvaddress) {
+			printk("Failed to allocate kernel memory for input.\n");
+			return -ENOMEM;
+		}
 		copy_from_user(input_kvaddress, 
-			(const void __user *)((struct accdnn_io_mem*)arg)->host_input_virtaddr,
-			IMG_SIZE);
+			(const void __user *)((struct accdnn_host_mem*)arg)->input_virtaddr,
+			IMG_SIZE * img_num);
 
 		//output_uvaddress = ((struct accdnn_io_mem*)arg)->host_output_virtaddr;
-		output_kvaddress = kzalloc(OUT_SIZE, GFP_KERNEL);
+		output_kvaddress = kzalloc(OUT_SIZE * img_num, GFP_KERNEL);
+		if (!output_kvaddress) {
+			printk("Failed to allocate kernel memory for output.\n");
+			return -ENOMEM;
+		}
+
 		// Set inputs/outputs address
-		input_phyaddr = dma_map_single(pdev, input_kvaddress, IMG_SIZE, DMA_TO_DEVICE);
-		output_phyaddr = dma_map_single(pdev, output_kvaddress, OUT_SIZE, DMA_FROM_DEVICE);
+		input_phyaddr = dma_map_single(pdev, input_kvaddress, IMG_SIZE * img_num, DMA_TO_DEVICE);
+		output_phyaddr = dma_map_single(pdev, output_kvaddress, OUT_SIZE * img_num, DMA_FROM_DEVICE);
 
 		iowrite32(input_phyaddr, accdnn_lp->virtaddr + ACCDNN_SRC_OFST);
 		iowrite32(output_phyaddr, accdnn_lp->virtaddr + ACCDNN_DST_OFST);
-		printk("Physical address of inputs: 0x%08X\n", (unsigned int)input_phyaddr);
-		printk("Physical address of outputs: 0x%08X\n", (unsigned int)output_phyaddr);
+//		printk("Physical address of inputs: 0x%08X\n", (unsigned int)input_phyaddr);
+//		printk("Physical address of outputs: 0x%08X\n", (unsigned int)output_phyaddr);
 
 		// Start inference
+		// printk("Starting inference.\n");
 		mb();
 		ctrl_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
 		ctrl_reg = ctrl_reg | ACCDNN_CTRL_START_MASK;
@@ -212,19 +230,27 @@ static long accdnn_ioctl(struct file *filep, unsigned int cmd, unsigned long arg
 		mb();
 		iowrite32(ctrl_reg, accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
 		mb();
-
+		j_start = jiffies;
 		// Wait for completion
-		msleep(500);
-		copy_to_user((void __user *)((struct accdnn_io_mem*)arg)->host_output_virtaddr,
+		do
+		{
+			msleep(5);
+			stat_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_STAT_OFST);
+		} while ((stat_reg & ACCDNN_STAT_DONE_MASK) == 0);
+		j_end = jiffies;
+		printk("In kernel space:\n");
+		printk("%d images are inferenced in %d jiffies\n", img_num, j_end - j_start);
+		printk("HZ: %d, fps = images * HZ / jiffies\n", HZ);
+		copy_to_user((void __user *)((struct accdnn_host_mem*)arg)->output_virtaddr,
 			output_kvaddress,
-			OUT_SIZE);
+			OUT_SIZE * img_num);
 
 		// Finish up
-		dma_unmap_single(pdev, input_phyaddr, IMG_SIZE, DMA_TO_DEVICE);
-		dma_unmap_single(pdev, output_phyaddr, OUT_SIZE, DMA_FROM_DEVICE);
+		dma_unmap_single(pdev, input_phyaddr, IMG_SIZE * img_num, DMA_TO_DEVICE);
+		dma_unmap_single(pdev, output_phyaddr, OUT_SIZE * img_num, DMA_FROM_DEVICE);
 		kfree(input_kvaddress);
 		kfree(output_kvaddress);
-		printk("Inference done\n");		
+		// printk("Inference done\n");		
 		break;
 	case ACCDNN_CHECK_STAT:
 		stat_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_STAT_OFST);

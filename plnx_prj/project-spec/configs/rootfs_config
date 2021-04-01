@@ -4239,6 +4239,7 @@ CONFIG_imagefeature-debug-tweaks=y
 #
 # apps 
 #
+# CONFIG_accdnn-app is not set
 # CONFIG_gpio-app is not set
 # CONFIG_gpio-demo is not set
 # CONFIG_peekpoke is not set
@@ -4252,7 +4253,6 @@ CONFIG_imagefeature-debug-tweaks=y
 #
 # user packages 
 #
-# CONFIG_accdnn-app is not set
 
 #
 # PetaLinux RootFS Settings
