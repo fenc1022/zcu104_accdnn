@@ -3,8 +3,8 @@
 
 #include <asm-generic/ioctl.h>
 
-#define WGT_SIZE 292352 // predefined model weight size in bytes
-#define IMG_SIZE 8192   // predefined image size in bytes
+#define WGT_SIZE 58291648 // predefined model weight size in bytes
+#define IMG_SIZE 824512   // predefined image size in bytes
 #define OUT_SIZE 64   // predefined output size in bytes
 
 struct accdnn_host_mem {

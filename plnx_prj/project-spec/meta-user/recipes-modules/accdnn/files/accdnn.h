@@ -1,8 +1,8 @@
 #ifndef ACCDNN_H
 #define ACCDNN_H
 
-#define WGT_SIZE 292352 // predefined model weight size in bytes
-#define IMG_SIZE 8192   // predefined image size in bytes
+#define WGT_SIZE 58291648 // predefined model weight size in bytes
+#define IMG_SIZE 824512   // predefined image size in bytes
 #define OUT_SIZE 64   // predefined output size in bytes
 #define DEV_WGT_PHYADDR 0  // physical address of weights in device memory
 

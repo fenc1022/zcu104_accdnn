@@ -3459,40 +3459,10 @@
           "axi_gpio_0/GPIO2"
         ]
       },
-      "axi_gpio_0_GPIO": {
+      "C0_SYS_CLK_0_1": {
         "interface_ports": [
-          "GPIO_0",
-          "axi_gpio_0/GPIO"
-        ]
-      },
-      "model_dma_0_host": {
-        "interface_ports": [
-          "model_dma_0/host",
-          "smartconnect_2/S00_AXI"
-        ]
-      },
-      "smartconnect_1_M00_AXI": {
-        "interface_ports": [
-          "smartconnect_1/M00_AXI",
-          "model_dma_0/s_axi"
-        ]
-      },
-      "ps_e_M_AXI_HPM0_LPD": {
-        "interface_ports": [
-          "ps_e/M_AXI_HPM0_LPD",
-          "smartconnect_1/S00_AXI"
-        ]
-      },
-      "smartconnect_2_M00_AXI": {
-        "interface_ports": [
-          "smartconnect_2/M00_AXI",
-          "ps_e/S_AXI_HPC0_FPD"
-        ]
-      },
-      "smartconnect_0_M00_AXI": {
-        "interface_ports": [
-          "smartconnect_0/M00_AXI",
-          "ddr4_0/C0_DDR4_S_AXI"
+          "C0_SYS_CLK_0",
+          "ddr4_0/C0_SYS_CLK"
         ]
       },
       "model_dma_0_ddr": {
@@ -3507,22 +3477,52 @@
           "ps_e/M_AXI_HPM0_FPD"
         ]
       },
-      "ddr4_1_C0_DDR4": {
+      "ps_e_M_AXI_HPM0_LPD": {
         "interface_ports": [
-          "c0_ddr4",
-          "ddr4_0/C0_DDR4"
+          "ps_e/M_AXI_HPM0_LPD",
+          "smartconnect_1/S00_AXI"
         ]
       },
-      "C0_SYS_CLK_0_1": {
+      "smartconnect_2_M00_AXI": {
         "interface_ports": [
-          "C0_SYS_CLK_0",
-          "ddr4_0/C0_SYS_CLK"
+          "smartconnect_2/M00_AXI",
+          "ps_e/S_AXI_HPC0_FPD"
+        ]
+      },
+      "model_dma_0_host": {
+        "interface_ports": [
+          "model_dma_0/host",
+          "smartconnect_2/S00_AXI"
+        ]
+      },
+      "smartconnect_0_M00_AXI": {
+        "interface_ports": [
+          "smartconnect_0/M00_AXI",
+          "ddr4_0/C0_DDR4_S_AXI"
+        ]
+      },
+      "smartconnect_1_M00_AXI": {
+        "interface_ports": [
+          "smartconnect_1/M00_AXI",
+          "model_dma_0/s_axi"
+        ]
+      },
+      "axi_gpio_0_GPIO": {
+        "interface_ports": [
+          "GPIO_0",
+          "axi_gpio_0/GPIO"
         ]
       },
       "smartconnect_1_M01_AXI": {
         "interface_ports": [
           "smartconnect_1/M01_AXI",
           "axi_gpio_0/S_AXI"
+        ]
+      },
+      "ddr4_1_C0_DDR4": {
+        "interface_ports": [
+          "c0_ddr4",
+          "ddr4_0/C0_DDR4"
         ]
       }
     },

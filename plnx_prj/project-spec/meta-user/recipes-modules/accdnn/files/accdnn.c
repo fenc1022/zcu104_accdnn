@@ -183,6 +183,7 @@ static long accdnn_ioctl(struct file *filep, unsigned int cmd, unsigned long arg
 		copy_from_user(input_kvaddress, 
 			(const void __user *)((struct accdnn_host_mem*)arg)->input_virtaddr,
 			IMG_SIZE * img_num);
+		printk("Cpoy input data to kernal space succeed.\n");
 
 		output_kvaddress = dma_alloc_coherent(pdev, OUT_SIZE * img_num, &output_phyaddr, GFP_KERNEL);
 		if (!output_kvaddress) {
@@ -205,11 +206,13 @@ static long accdnn_ioctl(struct file *filep, unsigned int cmd, unsigned long arg
 		mb();
 		iowrite32(ctrl_reg, accdnn_lp->virtaddr + ACCDNN_CTRL_OFST);
 		mb();
+		printk("Start inference\n");
 
 		// Wait for completion
 		j_start = jiffies;
 		do
 		{
+			// printk("Waiting for results...\n");
 			// msleep(5);
 			stat_reg = ioread32(accdnn_lp->virtaddr + ACCDNN_STAT_OFST);
 		} while ((stat_reg & ACCDNN_STAT_DONE_MASK) == 0);

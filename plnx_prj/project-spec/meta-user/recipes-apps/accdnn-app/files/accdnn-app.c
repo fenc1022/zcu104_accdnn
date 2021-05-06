@@ -56,44 +56,58 @@ int main(int argc, char **argv)
     printf("%d images from %s\n", img_num, argv[1]);
 
     // Open FPGA accelerator device & files
+    printf("Opening accelerator..." );
     fd_dev = open("/dev/accdnn", O_RDWR);
     if (fd_dev == -1) {
         printf("Error while opening device\n");
         return -1;
     }
+    printf("Done.\n");
 
+    printf("Opening weights file..." );
     fd_wgt = open("weights.bin", O_RDONLY);
     if (fd_wgt == -1) {
         printf("Error while opening weights file\n");
         return -1;
     }
+    printf("Done.\n");
 
+    printf("Opening input file..." );
     fd_in = open(argv[1], O_RDONLY);
     if (fd_in == -1) {
         printf("Error while opening input file\n");
         return -1;
     }
+    printf("Done.\n");
 
+    printf("Opening output file..." );
     fd_out = open("data_out.dat", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     if (fd_out == -1) {
         printf("Error while opening output file\n");
         return -1;
     }
+    printf("Done.\n");
 
     // Memory allocation
+    printf("Allocating memory for weights..." );
     buf_wgt =  malloc(WGT_SIZE);
     if (read(fd_wgt, buf_wgt, WGT_SIZE) == -1) {
         printf("Failed to read weights file\n");
         return -1;
     }
+    printf("Done.\n");
 
+    printf("Allocating memory for input..." );
     buf_in = malloc(IMG_SIZE * img_num);
     if (read(fd_in, buf_in, IMG_SIZE * img_num) == -1) {
         printf("Failed to read input file\n");
         return -1;
     }
+    printf("Done.\n");
 
+    printf("Allocating memory for output..." );
     buf_out = malloc(OUT_SIZE * img_num);
+    printf("Done.\n");
 
     host_mem.weight_virtaddr = (unsigned long long)buf_wgt;
     host_mem.input_virtaddr = (unsigned long long)buf_in;
@@ -101,12 +115,15 @@ int main(int argc, char **argv)
     host_mem.img_num = img_num;
 
     // Load weights to device memory
+    printf("Begin to load weights file...\n" );
     if (ioctl(fd_dev, ACCDNN_LOAD_WEIGHTS, &host_mem) != 0) {
         printf( "Failed to load weights file\n" );
         return -1;
     }
+    printf( "Load weights file done.\n" );
 
     // Start inference
+    printf("Begin to inference...\n" );
     if ( clock_gettime( CLOCK_REALTIME, &start) == -1 ) {
       printf( "error in clock gettime start\n" );
     }
@@ -119,6 +136,7 @@ int main(int argc, char **argv)
     if ( clock_gettime( CLOCK_REALTIME, &stop) == -1 ) {
       printf( "error in clock gettime stop\n" );
     }
+    printf("Inference done.\n" );
 
     time_diff = (stop.tv_sec - start.tv_sec) +
                 (stop.tv_nsec - start.tv_nsec) / 1000000000.0;
